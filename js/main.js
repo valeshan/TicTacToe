@@ -1,4 +1,29 @@
-!function($){
+//!function($){
+
+    //variables
+    const $player1 = $("#player1");
+    const $player2 = $("#player2");
+    const $p1SVG = "url('img/o.svg')";
+    const $p2SVG = "url('img/x.svg')";
+    const $boxes = $(".boxes");
+    const $box = $(".box");
+
+    //player objects
+    const genPlayer1 = {
+      player : $player1,
+      icon : $p1SVG,
+      squares : 0,
+      win : [],
+      active: false
+    };
+
+    const genPlayer2 = {
+      player : $player2,
+      icon : $p2SVG,
+      squares : 0,
+      win : [],
+      active: false
+    };
 
   //hide finish screen by default, other elements are hidden by start screen
   $("#finish").hide();
@@ -8,16 +33,9 @@
     $("header").fadeIn();
     $(".boxes").fadeIn();
     $("#start").fadeOut();
-    firstPlayer();
+    game.firstPlayer();
   })
 
-  //variables
-  const $player1 = $("#player1");
-  const $player2 = $("#player2");
-  const $p1SVG = $("#player1 svg");
-  const $p2SVG = $("#player2 svg");
-  const $boxes = $(".boxes");
-  const $box = $(".box");
 
   //change background depending on which player is active
   const bkgdChange = function(){
@@ -28,17 +46,31 @@
     }
   }
 
-  $box.click(bkgdChange);
+  $box.hover(bkgdChange);
 
-  //randomise first player
-  const firstPlayer = function(){
-    let coinFlip = Math.floor(Math.random(1)*2);
-    if(coinFlip == 0){
-      $player1.addClass("active");
-    } else{
-      $player2.addClass("active");
+  //
+
+  const game = {
+    //coin flip generator
+    coinFlip : Math.floor(Math.random(1)*2),
+
+    //current player
+    currentPlayer : [],
+
+    //randomise first player
+    firstPlayer : function (){
+      if(this.coinFlip == 0){
+        $player1.addClass("active");
+        return (this.currentPlayer = $player1)
+      } else{
+        $player2.addClass("active");
+        return (this.currentPlayer = $player2)
+      }
     }
   }
 
 
-}(jQuery);
+
+
+
+//}(jQuery);
