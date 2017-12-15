@@ -17,9 +17,10 @@
 
   //modifying start button to "two-player game"
   $("#start a[class=button]").text("Two-player game");
+  $("#start a[class=button]").attr("id", "two-player")
 
   //creating another start button "single player game"
-  $("#start header").append("<a class=button href=# class = 'single-player'> Single-player game</a>");
+  $("#start header").append("<a class=button href=# id= 'single-player'> Single-player game</a>");
 
 
   //**************** PLAYER NAME ****************//
@@ -27,10 +28,27 @@
 
   //need to insert input element here (exceeds)
   $("#start header").append(
-    "<div style = 'padding: 15px;'><input style = 'height: 30px;' placeholder = 'Enter name here' id = 'player-name' type='text'></div>");
+    "<div style = 'padding: 15px;'><input style = 'height: 40px; border-radius: 5px;' placeholder = '  Player 1 name (optional)' id = 'player-name1' type='text'></div>");
+
+  $("#start header").append(
+      "<div><input style = 'height: 40px; border-radius: 5px;' placeholder = '  Player 2 name (optional)' id = 'player-name2' type='text'></div>");
 
   //show player name on board screen
-  $("#player1").append("<div><p id='board-player' style='font-size: 3em; color: black;'></p></div>");
+  $("#player1").append("<div><p id='board-player1' style='font-size: 3em; color: black;'></p></div>");
+  $("#player2").append("<div><p id='board-player2' style='font-size: 3em; color: black;'></p></div>");
+
+
+  //**************** COMPUTER PLAYER ****************//
+
+  //random number generator between 0-8
+  const randomNum = Math.floor(Math.random(1)*9);
+
+
+  $("#single-player").click(()=>{
+    $("#start").fadeOut();
+    genPlayer2.person = $("#player-name2").val() + " the Computer";
+    coinToss.firstPlayer();
+  });
 
 
   //**************** PLAYER OBJECTS ****************//
@@ -82,12 +100,16 @@
   $("#finish").hide();
 
   //hide start screen when start button is clicked
-  $("#start a[class=button]").click(()=>{
+  $("#two-player").click(()=>{
     $("#start").fadeOut();
     coinToss.firstPlayer();
-    if($("#player-name").val() != ""){
-      genPlayer1.person = $("#player-name").val();
-      $("#board-player").text(genPlayer1.person);
+    if($("#player-name1").val() != ""){
+      genPlayer1.person = $("#player-name1").val();
+      $("#board-player1").text(genPlayer1.person);
+    }
+    if($("#player-name2").val() != ""){
+      genPlayer2.person = $("#player-name2").val();
+      $("#board-player2").text(genPlayer2.person);
     }
   })
 
