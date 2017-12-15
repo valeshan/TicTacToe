@@ -1,4 +1,4 @@
-!function($){
+//!function($){
 
 
   //**************** VARIABLES ****************//
@@ -10,13 +10,27 @@
   const $p2SVG = "url('img/x.svg')";
   const $boxes = $(".boxes");
   const $box = $(".box");
-  const filledBoxes = [];
+
+
+  //**************** START BUTTONS ****************//
+
+
+  //modifying start button to "two-player game"
+  $("#start a[class=button]").text("Two-player game");
+
+  //creating another start button "single player game"
+  $("#start header").append("<a class=button href=# class = 'single-player'> Single-player game</a>");
 
 
   //**************** PLAYER NAME ****************//
 
+
   //need to insert input element here (exceeds)
-  //$("#start h1").insertAfter("<div id='name-block'><input class = 'player-name' type='text'></div>")
+  $("#start header").append(
+    "<div style = 'padding: 15px;'><input style = 'height: 30px;' placeholder = 'Enter name here' id = 'player-name' type='text'></div>");
+
+  //show player name on board screen
+  $("#player1").append("<div><p id='board-player' style='font-size: 3em; color: black;'></p></div>");
 
 
   //**************** PLAYER OBJECTS ****************//
@@ -69,10 +83,12 @@
 
   //hide start screen when start button is clicked
   $("#start a[class=button]").click(()=>{
-    $("header").fadeIn();
-    $(".boxes").fadeIn();
     $("#start").fadeOut();
     coinToss.firstPlayer();
+    if($("#player-name").val() != ""){
+      genPlayer1.person = $("#player-name").val();
+      $("#board-player").text(genPlayer1.person);
+    }
   })
 
 
@@ -182,16 +198,16 @@
   $box.hover(checkWin2);
 
 
-    //**************** PLAYER WIN SCREEN ****************//
+  //**************** PLAYER WIN SCREEN ****************//
 
-    //win screen when player wins, takes player argument
-    function winScreen(player){
-      if(player.win == true){
-        $("#finish").addClass(player.winscreen);
-        $(".message").text(`${player.person} wins!`);
-        $("#finish").show();
-      }
+  //win screen when player wins, takes player argument
+  function winScreen(player){
+    if(player.win == true){
+      $("#finish").addClass(player.winscreen);
+      $(".message").text(`${player.person} wins!`);
+      $("#finish").show();
     }
+  }
 
 
   //**************** GAME DRAW & DRAW SCREEN ****************//
@@ -224,4 +240,4 @@
     genPlayer2.squares = 0;
     $("#finish").hide();
   })
-}(jQuery);
+//}(jQuery);
