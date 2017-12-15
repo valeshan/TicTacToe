@@ -16,18 +16,18 @@
   //player objects
 
   const genPlayer1 = {
-    person : $player1,
+    person : "Player 1",
     icon : $p1SVG,
     squares : 0,
-    win : [],
+    win : false,
     winscreen: "screen-win-one"
   };
 
   const genPlayer2 = {
-    person : $player2,
+    person : "Player 2",
     icon : $p2SVG,
     squares : 0,
-    win : [],
+    win : false,
     winscreen: "screen-win-two"
   };
 
@@ -57,7 +57,7 @@
     return box.hasClass("box-filled-2");
   }
 
-
+  //functions that check whether either player has met any of the win conditions
   function checkWin1(){
     if(left.every(winCheckP1) || vMid.every(winCheckP1) || right.every(winCheckP1) || tops.every(winCheckP1) ||
         hMid.every(winCheckP1) || bot.every(winCheckP1) || desc.every(winCheckP1) || asc.every(winCheckP1)){
@@ -74,33 +74,49 @@
     }
   };
 
+
+  // event handlers for win condition check
   $box.hover(checkWin1);
   $box.hover(checkWin2);
+
+
+  //*** GAME DRAW & DRAW SCREEN ***//
+
   $box.mouseleave(()=>{
     if(genPlayer1.squares + genPlayer2.squares == 9){
-      alert("Game Over");
+      $("#finish").addClass("screen-win-tie");
+      $(".message").text("It's a Tie!");
+      $("#finish").show();
     }
   })
 
-  //***WIN SCREEN***//
+  //*** PLAYER WIN SCREEN***//
 
   function winScreen(player){
     if(player.win == true){
       $("#finish").addClass(player.winscreen);
+      $(".message").text("Winner");
       $("#finish").show();
     }
   }
 
 
-  //****** BOX STATE  ******//
+  //****** RESTART GAME ******//
 
-  function boxState(){
-    for (let i = 0; i <= $box.length; i++){
-      if($box[i].is("[class*='box-filled']")){
-        filledBoxes.append($box[i]);
-      }
-    }
-  }
+  $("#finish a[class=button]").click(()=>{
+    $("#finish").removeClass("screen-win-tie");
+    $("#finish").removeClass("screen-win-one");
+    $("#finish").removeClass("screen-win-two");
+    $box.removeClass("box-filled-1");
+    $box.removeClass("box-filled-2");
+    $box.css("background-image", "");
+    genPlayer1.win = false;
+    genPlayer2.win = false;
+    genPlayer1.squares = 0;
+    genPlayer2.squares = 0;
+    $("#finish").hide();
+  })
+
 
 
   //****** START SEQUENCE ******//
