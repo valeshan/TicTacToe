@@ -32,6 +32,20 @@
   };
 
 
+  //****** START SEQUENCE ******//
+
+  //hide finish screen by default, other elements are hidden by start screen
+  $("#finish").hide();
+
+  //hide start screen when start button is clicked
+  $("#start a[class=button]").click(()=>{
+    $("header").fadeIn();
+    $(".boxes").fadeIn();
+    $("#start").fadeOut();
+    coinToss.firstPlayer();
+  })
+
+
   //****** WIN CONDITIONS ******//
 
   //vertical conditions
@@ -48,7 +62,7 @@
   const desc = [$($box[0]), $($box[4]), $($box[8])];
   const asc = [$($box[6]), $($box[4]), $($box[2])];
 
-
+  //verification functions to determine if each box in array win condition is true;
   const winCheckP1 = function(box){
     return box.hasClass("box-filled-1");
   }
@@ -107,6 +121,7 @@
     $("#finish").removeClass("screen-win-tie");
     $("#finish").removeClass("screen-win-one");
     $("#finish").removeClass("screen-win-two");
+    $(".message").empty();
     $box.removeClass("box-filled-1");
     $box.removeClass("box-filled-2");
     $box.css("background-image", "");
@@ -118,24 +133,9 @@
   })
 
 
+  //****** CLICK AND HOVER ******//
 
-  //****** START SEQUENCE ******//
-
-  //hide finish screen by default, other elements are hidden by start screen
-  $("#finish").hide();
-
-  //hide start screen when start button is clicked
-  $("#start a[class=button]").click(()=>{
-    $("header").fadeIn();
-    $(".boxes").fadeIn();
-    $("#start").fadeOut();
-    game.firstPlayer();
-  })
-
-
-  //****** CLICK AND HOVER STATE ******//
-
-  //*** HOVER STATE ***//
+  //*** HOVER FUNCTION ***//
 
   //change background depending on which player is active, except if box is filled
   const bkgdChange = function(){
@@ -159,9 +159,9 @@
   $box.hover(bkgdChange,boxClear);
 
 
-  //*** CLICK STATE ***//
+  //*** CLICK FUNCTION ***//
 
-  //other genPlayer to get active prop to true and current genPlayer set to false; squares +=1
+  //other genPlayer to get active class and current genPlayer remove active class; squares +=1
   $box.click(function(){
     if(!$(this).is("[class*='box-filled']")){
       if($player1.hasClass("active")){
@@ -181,19 +181,17 @@
   });
 
 
-  //****** GAME OBJECT ******//
+  //****** COIN TOSS OBJECT ******//
+
   //game object containing firstplayer, currentplayer and coinflip
 
-  const game = {
+  const coinToss = {
     //coin flip generator
-    coinFlip : Math.floor(Math.random(1)*2),
-
-    //current player
-    currentPlayer : [],
+    chance : Math.floor(Math.random(1)*2),
 
     //randomise first player
     firstPlayer : function (){
-      if(this.coinFlip == 0){
+      if(this.chance == 0){
         $player1.addClass("active");
         return (this.currentPlayer = $player1)
       } else{
