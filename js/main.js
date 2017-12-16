@@ -1,6 +1,12 @@
 //!function($){
 
 
+  //**************** DEFAULT ACTION(S) ****************//
+
+  //hide the finish element by default
+  $("#finish").hide();
+
+
   //**************** VARIABLES ****************//
 
 
@@ -10,6 +16,7 @@
   const $p2SVG = "url('img/x.svg')";
   const $boxes = $(".boxes");
   const $box = $(".box");
+  let filledSqs = [];
 
 
   //**************** START BUTTONS ****************//
@@ -27,28 +34,19 @@
 
 
   //need to insert input element here (exceeds)
+  //player1 name input
   $("#start header").append(
     "<div style = 'padding: 15px;'><input style = 'height: 40px; border-radius: 5px;' placeholder = '  Player 1 name (optional)' id = 'player-name1' type='text'></div>");
 
+  //player2 name input
   $("#start header").append(
       "<div><input style = 'height: 40px; border-radius: 5px;' placeholder = '  Player 2 name (optional)' id = 'player-name2' type='text'></div>");
+
 
   //show player name on board screen
   $("#player1").append("<div><p id='board-player1' style='font-size: 3em; color: black;'></p></div>");
   $("#player2").append("<div><p id='board-player2' style='font-size: 3em; color: black;'></p></div>");
 
-
-  //**************** COMPUTER PLAYER ****************//
-
-  //random number generator between 0-8
-  const randomNum = Math.floor(Math.random(1)*9);
-
-
-  $("#single-player").click(()=>{
-    $("#start").fadeOut();
-    genPlayer2.person = $("#player-name2").val() + " the Computer";
-    coinToss.firstPlayer();
-  });
 
 
   //**************** PLAYER OBJECTS ****************//
@@ -60,7 +58,7 @@
     icon : $p1SVG,
     squares : 0,
     win : false,
-    winscreen: "screen-win-one"
+    winscreen: "screen-win-one",
   };
 
   const genPlayer2 = {
@@ -68,7 +66,17 @@
     icon : $p2SVG,
     squares : 0,
     win : false,
-    winscreen: "screen-win-two"
+    winscreen: "screen-win-two",
+    active : false
+  };
+
+  const comPlayer = {
+    person : "Computer",
+    icon : $p2SVG,
+    squares : 0,
+    win : false,
+    winscreen: "screen-win-two",
+    active : false
   };
 
 
@@ -82,34 +90,73 @@
 
     //randomise first player
     firstPlayer : function (){
-      if(this.chance == 0){
-        $player1.addClass("active");
-        return (this.currentPlayer = $player1)
-      } else{
-        $player2.addClass("active");
-        return (this.currentPlayer = $player2)
-      }
-    }
+                    if(this.chance == 0){
+                      $player1.addClass("active");
+                      return (this.currentPlayer = $player1)
+                    } else{
+                      $player2.addClass("active");
+                      return (this.currentPlayer = $player2)
+                    }
+                  }
   }
 
 
-  //**************** START SEQUENCE ****************//
+  //**************** SINGLE PLAYER START SEQUENCE ****************//
 
 
-  //hide finish screen by default, other elements are hidden by start screen
-  $("#finish").hide();
+  const randomSquare={
+    //random number generator between 0-8
+    randSqNum : Math.floor(Math.random(1)*9),
+
+    //checks if square is an empty square, then fills it
+    ranFillaBox: function(){
+                  return $($box[randSqNum]).css("background-image", comPlayer.icon);
+                }
+    }
+
+
+  //hide start screen when start button is clicked, computer has name if player 2 input is filled
+  //remove board-player name element if no name is present
+  $("#single-player").click(()=>{
+    $("#start").fadeOut();
+    comPlayer.active = true;
+    genPlayer2.active = false;
+    if($("#player-name1").val() != ""){
+      genPlayer1.person = $("#player-name1").val();
+      $("#board-player1").text(genPlayer1.person);
+    } else{
+      $("#board-player1").remove();
+    }
+    if($("#player-name2").val() != ""){
+      genPlayer2.person = $("#player-name2").val() + " your imaginary friend";
+      $("#board-player2").text(genPlayer2.person);
+    }else{
+      $("#board-player2").remove();
+    }
+    coinToss.firstPlayer();
+  });
+
+
+  //**************** 2-PLAYER START SEQUENCE ****************//
+
 
   //hide start screen when start button is clicked
   $("#two-player").click(()=>{
     $("#start").fadeOut();
     coinToss.firstPlayer();
+    genPlayer2.active = true;
+    comPlayer.active = false;
     if($("#player-name1").val() != ""){
       genPlayer1.person = $("#player-name1").val();
       $("#board-player1").text(genPlayer1.person);
+    } else{
+      $("#board-player1").remove();
     }
     if($("#player-name2").val() != ""){
       genPlayer2.person = $("#player-name2").val();
       $("#board-player2").text(genPlayer2.person);
+    }else{
+      $("#board-player2").remove();
     }
   })
 
@@ -154,12 +201,16 @@
         $player1.removeClass("active");
         $player2.addClass("active");
         genPlayer1.squares +=1;
+        $(this).attr("id", filledSqs.length);
+        filledSqs += $(this);
       } else{
         $(this).css("background-image", $p2SVG);
         $(this).addClass("box-filled-2");
         $player2.removeClass("active");
         $player1.addClass("active");
         genPlayer2.squares +=1;
+        $(this).attr("id", filledSqs.length);
+        filledSqs += $(this);
       }
     }
   });
@@ -186,7 +237,7 @@
   const asc = [$($box[6]), $($box[4]), $($box[2])];
 
 
-  //*** WIN VERIFICATION FUNCTIONS ***//
+  //*** WIN VERIFICATION ***//
 
 
   //verification functions to determine if each box in array win condition is true;
@@ -204,6 +255,7 @@
         hMid.every(winCheckP1) || bot.every(winCheckP1) || desc.every(winCheckP1) || asc.every(winCheckP1)){
         genPlayer1.win = true;
         winScreen(genPlayer1);
+        return true;
     }
   };
 
@@ -211,7 +263,9 @@
     if(left.every(winCheckP2) || vMid.every(winCheckP2) || right.every(winCheckP2) || tops.every(winCheckP2) ||
         hMid.every(winCheckP2) || bot.every(winCheckP2) || desc.every(winCheckP2) || asc.every(winCheckP2)){
         genPlayer2.win = true;
+        comPlayer.win = true;
         winScreen(genPlayer2);
+        return true;
     }
   };
 
@@ -236,11 +290,13 @@
 
   //event handler and function when there is a tie; when all squares are full
   $box.mouseleave(()=>{
-    if(genPlayer1.squares + genPlayer2.squares == 9){
-      $("#finish").addClass("screen-win-tie");
-      $(".message").text("It's a Tie!");
-      $("#finish").show();
-    }
+      if(genPlayer1.squares + genPlayer2.squares == 9){
+        if(!checkWin1() && !checkWin2()){
+          $("#finish").addClass("screen-win-tie");
+          $(".message").text("It's a Tie!");
+          $("#finish").show();
+        }
+      }
   })
 
 
