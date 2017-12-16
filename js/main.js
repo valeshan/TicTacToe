@@ -264,7 +264,11 @@
         hMid.every(winCheckP2) || bot.every(winCheckP2) || desc.every(winCheckP2) || asc.every(winCheckP2)){
         genPlayer2.win = true;
         comPlayer.win = true;
-        winScreen(genPlayer2);
+        if(genPlayer2.active){
+          winScreen(genPlayer2);
+        }else if(comPlayer.active){
+          winScreen(comPlayer);
+        }
         return true;
     }
   };
